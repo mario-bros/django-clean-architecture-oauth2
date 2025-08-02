@@ -1,0 +1,64 @@
+=== PROJECT STRUCTURE ===
+total 28
+drwxr-xr-x  4 mario mario 4096 Jul 31 10:12 .
+drwxr-xr-x 55 mario mario 4096 Jul 31 10:02 ..
+-rw-r--r--  1 mario mario  161 Jul 31 10:02 README.md
+-rwxr-xr-x  1 mario mario  668 Jul 31 10:02 manage.py
+drwxr-xr-x  3 mario mario 4096 Jul 31 10:02 myapp
+drwxr-xr-x  2 mario mario 4096 Jul 31 10:02 mydrfproject
+-rw-r--r--  1 mario mario   26 Jul 31 10:12 project_analysis.txt
+
+=== REQUIREMENTS ===
+No requirements.txt found
+
+=== PYTHON FILES ===
+./manage.py
+./myapp/urls.py
+./myapp/__init__.py
+./myapp/admin.py
+./myapp/apps.py
+./myapp/models.py
+./myapp/tests.py
+./myapp/migrations/__init__.py
+./myapp/views.py
+./mydrfproject/urls.py
+./mydrfproject/wsgi.py
+./mydrfproject/__init__.py
+./mydrfproject/asgi.py
+./mydrfproject/settings.py
+
+=== MANAGE.PY ===
+#!/usr/bin/env python
+"""Django's command-line utility for administrative tasks."""
+import os
+import sys
+
+
+def main():
+    """Run administrative tasks."""
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mydrfproject.settings')
+    try:
+
+=== DIRECTORIES ===
+myapp/:
+total 36
+drwxr-xr-x 3 mario mario 4096 Jul 31 10:02 .
+drwxr-xr-x 4 mario mario 4096 Jul 31 10:12 ..
+-rw-r--r-- 1 mario mario    0 Jul 31 10:02 __init__.py
+-rw-r--r-- 1 mario mario   63 Jul 31 10:02 admin.py
+-rw-r--r-- 1 mario mario  142 Jul 31 10:02 apps.py
+drwxr-xr-x 2 mario mario 4096 Jul 31 10:02 migrations
+-rw-r--r-- 1 mario mario   57 Jul 31 10:02 models.py
+-rw-r--r-- 1 mario mario   60 Jul 31 10:02 tests.py
+-rw-r--r-- 1 mario mario  179 Jul 31 10:02 urls.py
+-rw-r--r-- 1 mario mario  322 Jul 31 10:02 views.py
+
+mydrfproject/:
+total 24
+drwxr-xr-x 2 mario mario 4096 Jul 31 10:02 .
+drwxr-xr-x 4 mario mario 4096 Jul 31 10:12 ..
+-rw-r--r-- 1 mario mario    0 Jul 31 10:02 __init__.py
+-rw-r--r-- 1 mario mario  401 Jul 31 10:02 asgi.py
+-rw-r--r-- 1 mario mario 3675 Jul 31 10:02 settings.py
+-rw-r--r-- 1 mario mario  891 Jul 31 10:02 urls.py
+-rw-r--r-- 1 mario mario  401 Jul 31 10:02 wsgi.py

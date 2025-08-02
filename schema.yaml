@@ -1,0 +1,108 @@
+openapi: 3.0.3
+info:
+  title: Clean Architecture OAuth2 API
+  version: 1.0.0
+  description: OAuth2 protected API demonstrating Clean Architecture patterns
+paths:
+  /api/protected-resource/:
+    get:
+      operationId: get_protected_resource_original
+      description: Get protected resource using traditional Django approach
+      summary: Get protected resource (Original)
+      tags:
+      - Original Implementation
+      security:
+      - oauth2:
+        - read
+      - oauth2: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: This is a protected resource!
+          description: Protected resource accessed successfully
+        '401':
+          description: Authentication credentials were not provided
+        '403':
+          description: Insufficient OAuth2 scope permissions
+  /api/v2/protected-resource/:
+    get:
+      operationId: get_protected_resource_clean_arch
+      description: Access protected resources using Clean Architecture pattern with
+        OAuth2
+      summary: Get protected resources (Clean Architecture)
+      parameters:
+      - in: query
+        name: resource_id
+        schema:
+          type: integer
+        description: 'Optional: Filter by specific resource ID (1, 2, or 3)'
+      tags:
+      - Clean Architecture
+      security:
+      - oauth2:
+        - read
+      - oauth2: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: This is a protected resource!
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      username:
+                        type: string
+                        example: testuser
+                      full_name:
+                        type: string
+                        example: Test User
+                  resource:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      name:
+                        type: string
+                        example: User Profile Data
+                      description:
+                        type: string
+                        example: Personal profile information
+                  access_granted_at:
+                    type: string
+                    example: now
+          description: Protected resources retrieved successfully
+        '400':
+          description: Invalid resource ID format
+        '401':
+          description: Authentication credentials were not provided
+        '403':
+          description: Insufficient OAuth2 scope permissions or user not active
+        '500':
+          description: Internal server error
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: /o/authorize/
+          tokenUrl: /o/token/
+          scopes:
+            read: Read scope
+            write: Write scope
+            groups: Access to your groups

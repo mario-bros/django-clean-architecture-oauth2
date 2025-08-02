@@ -1,0 +1,121 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+metadata:
+  name: django-clean-arch
+build:
+  artifacts:
+  - image: django-clean-arch
+    context: .
+    docker:
+      dockerfile: Dockerfile
+      buildArgs:
+        BUILD_ENV: development
+  tagPolicy:
+    gitCommit: {}
+  local:
+    push: false
+
+manifests:
+  rawYaml:
+  - k8s/namespace.yaml
+  - k8s/configmap.yaml
+  - k8s/deployment.yaml
+  - k8s/service.yaml
+  - k8s/ingress.yaml
+
+deploy:
+  kubectl: {}
+  statusCheckDeadlineSeconds: 300
+
+portForward:
+- resourceType: service
+  resourceName: django-clean-arch-service
+  namespace: django-clean-arch
+  port: 80
+  localPort: 8000
+
+profiles:
+- name: development
+  build:
+    artifacts:
+    - image: django-clean-arch
+      context: .
+      docker:
+        dockerfile: Dockerfile
+        buildArgs:
+          BUILD_ENV: development
+    tagPolicy:
+      gitCommit: {}
+    local:
+      push: false
+  manifests:
+    rawYaml:
+    - k8s/namespace.yaml
+    - k8s/configmap.yaml
+    - k8s/deployment.yaml
+    - k8s/service.yaml
+    - k8s/ingress.yaml
+  deploy:
+    kubectl: {}
+  portForward:
+  - resourceType: service
+    resourceName: django-clean-arch-service
+    namespace: django-clean-arch
+    port: 80
+    localPort: 8000
+
+- name: production
+  build:
+    artifacts:
+    - image: django-clean-arch
+      context: .
+      docker:
+        dockerfile: Dockerfile.prod
+        buildArgs:
+          BUILD_ENV: production
+    tagPolicy:
+      sha256: {}
+    local:
+      push: true
+  manifests:
+    rawYaml:
+    - k8s/namespace.yaml
+    - k8s/configmap.yaml
+    - k8s/jobs.yaml
+    - k8s/deployment.yaml
+    - k8s/service.yaml
+    - k8s/ingress.yaml
+  deploy:
+    kubectl: {}
+  portForward: []
+
+- name: test
+  build:
+    artifacts:
+    - image: django-clean-arch
+      context: .
+      docker:
+        dockerfile: Dockerfile
+        buildArgs:
+          BUILD_ENV: test
+    tagPolicy:
+      gitCommit: {}
+    local:
+      push: false
+  test:
+  - image: django-clean-arch
+    structureTests:
+    - "./test_structure.yaml"
+  manifests:
+    rawYaml:
+    - k8s/namespace.yaml
+    - k8s/configmap.yaml
+  deploy:
+    kubectl: {}
+
+verify:
+- name: django-health-check
+  container:
+    name: django-clean-arch
+    image: django-clean-arch
+    command: ["python", "manage.py", "check", "--deploy"]

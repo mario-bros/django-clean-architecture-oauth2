@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-clean-arch
+  namespace: django-clean-arch
+  labels:
+    app: django-clean-arch
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: django-clean-arch
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: django-clean-arch
+        tier: backend
+    spec:
+      containers:
+      - name: django-app
+        image: django-clean-arch:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: DEBUG
+          valueFrom:
+            configMapKeyRef:
+              name: django-config
+              key: DEBUG
+        - name: ALLOWED_HOSTS
+          valueFrom:
+            configMapKeyRef:
+              name: django-config
+              key: ALLOWED_HOSTS
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: django-secrets
+              key: SECRET_KEY
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: django-config
+              key: DATABASE_URL
+        - name: CORS_ALLOWED_ORIGINS
+          valueFrom:
+            configMapKeyRef:
+              name: django-config
+              key: CORS_ALLOWED_ORIGINS
+        - name: OAUTH2_PROVIDER_ACCESS_TOKEN_EXPIRE_SECONDS
+          valueFrom:
+            configMapKeyRef:
+              name: django-config
+              key: OAUTH2_PROVIDER_ACCESS_TOKEN_EXPIRE_SECONDS
+        - name: OAUTH2_PROVIDER_REFRESH_TOKEN_EXPIRE_SECONDS
+          valueFrom:
+            configMapKeyRef:
+              name: django-config
+              key: OAUTH2_PROVIDER_REFRESH_TOKEN_EXPIRE_SECONDS
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /admin/login/
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /admin/login/
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        volumeMounts:
+        - name: django-media
+          mountPath: /app/media
+        - name: django-static
+          mountPath: /app/staticfiles
+      volumes:
+      - name: django-media
+        emptyDir: {}
+      - name: django-static
+        emptyDir: {}
+      restartPolicy: Always

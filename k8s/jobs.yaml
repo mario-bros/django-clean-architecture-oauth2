@@ -1,0 +1,94 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: django-migrate
+  namespace: django-clean-arch
+  labels:
+    app: django-clean-arch
+    component: migration
+spec:
+  template:
+    metadata:
+      labels:
+        app: django-clean-arch
+        component: migration
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: django-migrate
+        image: django-clean-arch:latest
+        imagePullPolicy: IfNotPresent
+        command: ["python", "manage.py", "migrate"]
+        env:
+        - name: DEBUG
+          value: "False"
+        - name: ALLOWED_HOSTS
+          valueFrom:
+            configMapKeyRef:
+              name: django-config
+              key: ALLOWED_HOSTS
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: django-secrets
+              key: SECRET_KEY
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: django-config
+              key: DATABASE_URL
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: django-collectstatic
+  namespace: django-clean-arch
+  labels:
+    app: django-clean-arch
+    component: static-files
+spec:
+  template:
+    metadata:
+      labels:
+        app: django-clean-arch
+        component: static-files
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: django-collectstatic
+        image: django-clean-arch:latest
+        imagePullPolicy: IfNotPresent
+        command: ["python", "manage.py", "collectstatic", "--noinput"]
+        env:
+        - name: DEBUG
+          value: "False"
+        - name: ALLOWED_HOSTS
+          valueFrom:
+            configMapKeyRef:
+              name: django-config
+              key: ALLOWED_HOSTS
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: django-secrets
+              key: SECRET_KEY
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        volumeMounts:
+        - name: django-static
+          mountPath: /app/staticfiles
+      volumes:
+      - name: django-static
+        emptyDir: {}

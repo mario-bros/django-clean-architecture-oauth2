@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: django-clean-arch-ingress
+  namespace: django-clean-arch
+  labels:
+    app: django-clean-arch
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: django-clean-arch.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: django-clean-arch-service
+            port:
+              number: 80
+  - host: localhost
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: django-clean-arch-service
+            port:
+              number: 80

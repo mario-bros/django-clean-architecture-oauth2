@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: django-clean-arch
+  labels:
+    name: django-clean-arch
+    environment: development
